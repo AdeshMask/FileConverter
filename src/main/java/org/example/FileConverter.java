@@ -7,7 +7,9 @@ import com.aspose.imaging.fileformats.tiff.enums.TiffExpectedFormat;
 import com.aspose.imaging.fileformats.tiff.enums.TiffPhotometrics;
 import com.aspose.imaging.imageoptions.TiffOptions;
 import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.exceptions.BadPasswordException;
 import com.spire.pdf.PdfDocument;
+import org.apache.pdfbox.pdmodel.PDDocument;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -51,20 +53,26 @@ public class FileConverter
         System.out.println("File Type is "+extensionType);
         if (extensionType.equals("pdf"))
         {
-            outputPath = new File("D://files//Spring_MVC2.tiff");
-            pdfDocument.loadFromFile("D://files//Spring_MVC.pdf");
-            pdfDocument.saveToTiff(String.valueOf(outputPath));
-            System.out.println("File conversion completed.... " + outputPath);
+            outputPath = new File("D://files//PNBONE2.tiff");
+            boolean isProtected =PdfDocument.isPasswordProtected("D://files//PNBONE.pdf");
+            if (isProtected){
+                System.out.println("The document is password protected.");
+            }
+            else {
+                pdfDocument.loadFromFile("D://files//PNBONE.pdf");
+                pdfDocument.saveToTiff(String.valueOf(outputPath));
+                System.out.println("File conversion completed.... " + outputPath);
+                resizeTiffFile(outputPath);
+            }
         }
         else if ((extensionType.equals("jpeg")) || (extensionType.equals("JPEG")) || (extensionType.equals("png")) || (extensionType.equals("PNG"))
                 || (extensionType.equals("gif")) || (extensionType.equals("GIF")) || (extensionType.equals("jpg")) || (extensionType.equals("JPG")))
         {
-            outputPath = new File("D://files//marks.tiff");
+            outputPath = new File("D://files//PNBONE1.tiff");
             ImageIO.write(outputImage2 , "tiff", outputPath);
             System.out.println("File conversion completed.... " + outputPath);
+            resizeTiffFile(outputPath);
         }
-
-        resizeTiffFile(outputPath);
     }
 
     /*
@@ -84,7 +92,7 @@ public class FileConverter
         System.out.println("Converter....");
 
         try {
-            file = new File("D://files//Spring_MVC.pdf");
+            file = new File("D://files//PNBONE.pdf");
             image = ImageIO.read(file); //
             String extensionType = getExtension(file.getName());
             if ((extensionType.equals("jpeg")) || (extensionType.equals("JPEG")) || (extensionType.equals("png")) || (extensionType.equals("PNG"))
