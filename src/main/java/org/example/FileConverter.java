@@ -53,24 +53,24 @@ public class FileConverter
         System.out.println("File Type is "+extensionType);
         if (extensionType.equals("pdf"))
         {
-            outputPath = new File("D://files//PNBONE2.tiff");
-            boolean isProtected =PdfDocument.isPasswordProtected("D://files//PNBONE.pdf");
+            outputPath = new File("D://files//Converted.tiff");
+            boolean isProtected =PdfDocument.isPasswordProtected(String.valueOf(file));
             if (isProtected){
                 System.out.println("The document is password protected.");
             }
             else {
-                pdfDocument.loadFromFile("D://files//PNBONE.pdf");
+                pdfDocument.loadFromFile(String.valueOf(file));
                 pdfDocument.saveToTiff(String.valueOf(outputPath));
-                System.out.println("File conversion completed.... " + outputPath);
+                System.out.println("File conversion completed.... ");
                 resizeTiffFile(outputPath);
             }
         }
         else if ((extensionType.equals("jpeg")) || (extensionType.equals("JPEG")) || (extensionType.equals("png")) || (extensionType.equals("PNG"))
                 || (extensionType.equals("gif")) || (extensionType.equals("GIF")) || (extensionType.equals("jpg")) || (extensionType.equals("JPG")))
         {
-            outputPath = new File("D://files//PNBONE1.tiff");
+            outputPath = new File("D://files//Converted.tiff");
             ImageIO.write(outputImage2 , "tiff", outputPath);
-            System.out.println("File conversion completed.... " + outputPath);
+            System.out.println("File conversion completed.... ");
             resizeTiffFile(outputPath);
         }
     }
@@ -92,7 +92,7 @@ public class FileConverter
         System.out.println("Converter....");
 
         try {
-            file = new File("D://files//PNBONE.pdf");
+            file = new File("D://files//EMP.pdf");
             image = ImageIO.read(file); //
             String extensionType = getExtension(file.getName());
             if ((extensionType.equals("jpeg")) || (extensionType.equals("JPEG")) || (extensionType.equals("png")) || (extensionType.equals("PNG"))
