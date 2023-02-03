@@ -1,85 +1,75 @@
 package org.example;
 
+import com.aspose.imaging.ColorPaletteHelper;
+import com.aspose.imaging.Image;
+import com.aspose.imaging.fileformats.tiff.enums.TiffCompressions;
+import com.aspose.imaging.fileformats.tiff.enums.TiffExpectedFormat;
+import com.aspose.imaging.fileformats.tiff.enums.TiffPhotometrics;
+import com.aspose.imaging.imageoptions.TiffOptions;
 import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.pdf.PdfReader;
-import com.itextpdf.text.pdf.PdfStamper;
 import com.spire.pdf.PdfDocument;
 
-import java.awt.*;
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import javax.imageio.ImageIO;
+
 
 
 public class FileConverter
 {
     static PdfDocument pdfDocument = new PdfDocument();
     static File file;
+    static File outputPath;
     static BufferedImage image;
-    static  BufferedImage outputImage2;
+    static BufferedImage outputImage2;
 
-    private static void sizeReduce(String extensionType) throws IOException, DocumentException {
+    /*
+    * Here we taking the input as TIFF and storing the output into Image.
+    * and later changing the properties of the output and storing it into the specified location.
+    * */
+    private static void resizeTiffFile(File outputPath) {
+        try (Image image1 = Image.load(String.valueOf(outputPath)))
+        {
+            // Create an instance of TiffOptions for the resultant image
+            TiffOptions outputSettings = new TiffOptions(TiffExpectedFormat.Default);
+            // Set BitsPerSample, Compression, Photometric mode and graycale palette
+            outputSettings.setBitsPerSample(new int[] { 4 });
+            outputSettings.setCompression(TiffCompressions.Lzw);
+            outputSettings.setPhotometric(TiffPhotometrics.Palette);
+            outputSettings.setPalette(ColorPaletteHelper.create4BitGrayscale(false));
+            image1.save("D://files//Converted.tiff", outputSettings);
+        }
+    }
+
+    /*
+    * Here we are taking the file extension to convert it to Tiff.
+    * also check that the file extension matches the corresponding  file extension and then  convert it to Tiff.
+    * Once the file extension matches and conversion is complete we storing the file path in the in outputPath.
+    * and finally sending that path to the reducer to resize the file.
+    * */
+    private static void convertToTiff(String extensionType) throws IOException, DocumentException {
+        System.out.println("File Type is "+extensionType);
         if (extensionType.equals("pdf"))
         {
-            PdfReader reader = new PdfReader(new FileInputStream(file));
-            PdfStamper stamper = new PdfStamper(reader, new FileOutputStream("D://files//EMP1.pdf"));
-            int total = reader.getNumberOfPages() + 1;
-            for ( int i=1; i<total; i++) {
-                reader.setPageContent(i + 1, reader.getPageContent(i + 1));
-            }
-            stamper.setFullCompression();
-            stamper.close();
+            outputPath = new File("D://files//Spring_MVC2.tiff");
+            pdfDocument.loadFromFile("D://files//Spring_MVC.pdf");
+            pdfDocument.saveToTiff(String.valueOf(outputPath));
+            System.out.println("File conversion completed.... " + outputPath);
         }
-
         else if ((extensionType.equals("jpeg")) || (extensionType.equals("JPEG")) || (extensionType.equals("png")) || (extensionType.equals("PNG"))
                 || (extensionType.equals("gif")) || (extensionType.equals("GIF")) || (extensionType.equals("jpg")) || (extensionType.equals("JPG")))
         {
-            String outputImagePath2 = "D://files//Marksheet2.jpg";
-            double percent = 0.5;
-//            BufferedImage image = ImageIO.read(new File(outputImagePath2));
-            resizeImage(image, outputImagePath2, percent);
+            outputPath = new File("D://files//marks.tiff");
+            ImageIO.write(outputImage2 , "tiff", outputPath);
+            System.out.println("File conversion completed.... " + outputPath);
         }
+
+        resizeTiffFile(outputPath);
     }
 
-    private static void resizeImage(BufferedImage image, String outputImagePath2, double percent) throws IOException {
-        int scaledWidth = (int) (image.getWidth() * percent);
-        int scaledHeight = (int) (image.getHeight() * percent);
-        resize(image, outputImagePath2, scaledWidth, scaledHeight);
-    }
-
-    private static void resize(BufferedImage image, String outputImagePath2, int scaledWidth, int scaledHeight) throws IOException {
-        BufferedImage outputImage = new BufferedImage(scaledWidth,
-                scaledHeight, image.getType());
-        // scales the input image to the output image
-        Graphics2D g2d = outputImage.createGraphics();
-        g2d.drawImage(image, 0, 0, scaledWidth, scaledHeight, null);
-        g2d.dispose();
-        // extracts extension of output file
-        String formatName = outputImagePath2.substring(outputImagePath2.lastIndexOf(".") + 1);
-        // writes to output file
-        ImageIO.write(outputImage, formatName, new File(outputImagePath2));
-        File newFile = new File(outputImagePath2);
-        System.out.println("OutputImage "+newFile);
-        outputImage2 = ImageIO.read(newFile);
-    }
-
-
-    private static void convertToTiff(String type) throws IOException, DocumentException {
-        System.out.println("File Type is "+type);
-        if (type.equals("pdf"))
-        {
-            pdfDocument.loadFromFile("D://files//java.pdf");
-            pdfDocument.saveToTiff("D://files//java2.tiff");
-            System.out.println("File conversion completed....");
-        }
-        else if ((type.equals("jpeg")) || (type.equals("JPEG")) || (type.equals("png")) || (type.equals("PNG"))
-                || (type.equals("gif")) || (type.equals("GIF")) || (type.equals("jpg")) || (type.equals("JPG")))
-        {
-            ImageIO.write(outputImage2 , "tiff", new File("D://files//marks.tiff"));
-            System.out.println("File conversion completed....");
-        }
-    }
-
+    /*
+    * Here we are taking the file name as string input to find its extension.
+    * */
     private static String getExtension(String fileName) {
         String extension = "";
         int index = fileName.lastIndexOf('.');
@@ -94,21 +84,18 @@ public class FileConverter
         System.out.println("Converter....");
 
         try {
-            file = new File("D://files//Marksheet.jpg");
+            file = new File("D://files//Spring_MVC.pdf");
             image = ImageIO.read(file); //
             String extensionType = getExtension(file.getName());
             if ((extensionType.equals("jpeg")) || (extensionType.equals("JPEG")) || (extensionType.equals("png")) || (extensionType.equals("PNG"))
             || (extensionType.equals("gif")) || (extensionType.equals("GIF")) || (extensionType.equals("jpg")) || (extensionType.equals("JPG"))
             || (extensionType.equals("pdf")) || (extensionType.equals("PDF")))
             {
-                sizeReduce(extensionType);
                 convertToTiff(extensionType);
             }
             else {
-
                 System.out.println("File Format now supported...");
             }
-
         } catch (IOException | DocumentException e) {
             e.printStackTrace();
         }

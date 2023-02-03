@@ -28,6 +28,11 @@
       <name>iText Repository - releases</name>
       <url>https://repo.itextsupport.com/releases</url>
     </repository>
+    <repository>
+      <id>AsposeJavaAPI</id>
+      <name>Aspose Java API</name>
+      <url>https://repository.aspose.com/repo/</url>
+    </repository>
   </repositories>
 
   <dependencies>
@@ -53,6 +58,13 @@
       <groupId>org.bouncycastle</groupId>
       <artifactId>bcprov-jdk15on</artifactId>
       <version>1.52</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.aspose</groupId>
+      <artifactId>aspose-imaging</artifactId>
+      <version>20.12</version>
+      <classifier>jdk16</classifier>
     </dependency>
   </dependencies>
 </project>
