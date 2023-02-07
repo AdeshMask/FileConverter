@@ -7,10 +7,7 @@ import com.aspose.imaging.fileformats.tiff.enums.TiffExpectedFormat;
 import com.aspose.imaging.fileformats.tiff.enums.TiffPhotometrics;
 import com.aspose.imaging.imageoptions.TiffOptions;
 import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.exceptions.BadPasswordException;
 import com.spire.pdf.PdfDocument;
-import org.apache.pdfbox.pdmodel.PDDocument;
-
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -33,13 +30,14 @@ public class FileConverter
         try (Image image1 = Image.load(String.valueOf(outputPath)))
         {
             // Create an instance of TiffOptions for the resultant image
+            System.out.println("Image color is .." + image1.getPalette());
             TiffOptions outputSettings = new TiffOptions(TiffExpectedFormat.Default);
-            // Set BitsPerSample, Compression, Photometric mode and graycale palette
-            outputSettings.setBitsPerSample(new int[] { 4 });
+            // Set BitsPerSample, Compression, Photometric mode and palette
+            outputSettings.setBitsPerSample(new int[] { 8 });
             outputSettings.setCompression(TiffCompressions.Lzw);
             outputSettings.setPhotometric(TiffPhotometrics.Palette);
-            outputSettings.setPalette(ColorPaletteHelper.create4BitGrayscale(false));
-            image1.save("D://files//Converted.tiff", outputSettings);
+            outputSettings.setPalette(ColorPaletteHelper.create8Bit());
+            image1.save("D://files//Converted2.tiff", outputSettings);
         }
     }
 
@@ -69,8 +67,8 @@ public class FileConverter
                 || (extensionType.equals("gif")) || (extensionType.equals("GIF")) || (extensionType.equals("jpg")) || (extensionType.equals("JPG")))
         {
             outputPath = new File("D://files//Converted.tiff");
-            ImageIO.write(outputImage2 , "tiff", outputPath);
-            System.out.println("File conversion completed.... ");
+            ImageIO.write(image , "tiff", outputPath);
+            System.out.println("File conversion completed.... "+outputPath);
             resizeTiffFile(outputPath);
         }
     }
@@ -92,7 +90,7 @@ public class FileConverter
         System.out.println("Converter....");
 
         try {
-            file = new File("D://files//EMP.pdf");
+            file = new File("D://files//Adesh.jpg");
             image = ImageIO.read(file); //
             String extensionType = getExtension(file.getName());
             if ((extensionType.equals("jpeg")) || (extensionType.equals("JPEG")) || (extensionType.equals("png")) || (extensionType.equals("PNG"))
@@ -102,7 +100,7 @@ public class FileConverter
                 convertToTiff(extensionType);
             }
             else {
-                System.out.println("File Format now supported...");
+                System.out.println("File Format not supported...");
             }
         } catch (IOException | DocumentException e) {
             e.printStackTrace();
